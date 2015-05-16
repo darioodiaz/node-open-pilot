@@ -1,0 +1,29 @@
+{
+  "name": "NOP",
+  "version": "1.0.0",
+  "description": "node-open-pilot is an opensource software and hardware that allows you to build your own quadcopter and control it with NodeJS",
+  "main": "nop-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/darioodiaz/open-node-pilot"
+  },
+  "dependencies": {
+    "express": "^4.12.3",
+    "faye": "^1.1.1",
+    "serialport": "^1.7.1"
+  },
+  "keywords": [
+    "opensource",
+    "drone",
+    "quadcopter"
+  ],
+  "author": "Dario Diaz",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/darioodiaz/open-node-pilot/issues"
+  },
+  "homepage": "https://github.com/darioodiaz/open-node-pilot"
+}

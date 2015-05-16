@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Drone UI</title>
+	<link href="lib/bootstrap/css/bootstrap.css" type="text/css" rel="stylesheet" />
+	<link id="import_header" rel="import" href="pages/header.html">
+	<link id="import_info" rel="import" href="pages/info.html">
+	<link id="import_actions" rel="import" href="pages/actions.html">
+</head>
+<body>
+
+	<div id="div_header" class="containter-fluid col-lg-12"></div>
+
+	<div class="container col-lg-2">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<div class="panel-title text-center">Actions</div>
+			</div>
+			<div id="div_actions" class="panel-body"></div>
+		</div>
+
+		<div id="div_info" class="panel panel-info"></div>
+	</div>
+
+	<div class="container col-lg-10">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<div class="panel-title text-center">Drone Live</div>
+			</div>
+			<div class="panel-body">
+				<div id="droneRender" style="height: 500px; border: 1px solid black;"></div>
+			</div>
+		</div>			
+	</div>
+
+	<script>
+		var importsArray = ["header", "info", "actions"];
+		importsArray.forEach(function(item) {
+			var link = document.querySelector('#import_' + item);
+	    	var template = link.import.querySelector('template');
+	    	var clone = document.importNode(template.content, true);
+	    	document.querySelector('#div_'+ item).appendChild(clone);
+		});
+    </script>
+
+	<script src="lib/jquery.js"></script>
+	<script src="lib/stick.js"></script>
+	<script src="lib/three.min.js"></script>
+
+	<script src="js/helpers.js"></script>
+	<script src="js/socketFunctions.js"></script>
+	<script src="js/joystickFunctions.js"></script>
+	<script src="js/renderFunctions.js"></script>
+	<script src="js/app.js"></script>
+	<script src="http://localhost:8000/client.js"></script>
+	
+</body>
+</html>
