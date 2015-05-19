@@ -10,3 +10,7 @@ An open-source software and open-hardware desing for make your own drone/quadcop
 ### Historial de cambios:
 
 * 14/05/2015 - Primera prueba de hardware y software juntos EXITOSA ! (algunos problemas de balanceo mientras volaba pero todo funciono !)
+
+# Copyright and license
+
+Code and documentation copyright 2015 Dario Diaz. The project is under [Creative Commons 4.0 Internacional License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
