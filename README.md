@@ -13,4 +13,6 @@ An open-source software and open-hardware desing for make your own drone/quadcop
 
 # Copyright and license
 
-Code and documentation copyright 2015 Dario Diaz. The project is under [Creative Commons 4.0 Internacional License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+Code and documentation Copyright 2015 Dario Diaz. 
+Electronic schematics, desing and 3D quadcopter model Copyright 2015 Dario Ochoa.
+This project is under [Creative Commons 4.0 Internacional License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
