@@ -13,6 +13,8 @@ An open-source software and open-hardware desing for make your own drone/quadcop
 * 14/05/2015 - Primera prueba de hardware y software juntos EXITOSA ! (algunos problemas de balanceo mientras volaba pero todo funciono !)
 * 05/06/2015 - Subida de archivos y guias de construccion de hardware, implementacion de PID en el software
 
+NOTA: Las guias de hardware estan un poco demoradas, como la funcionalidad final de software. Estar atentos a las actualizaciones para cualquier nuevo cambio subido.
+
 # Copyright and license
 
 Code and documentation Copyright 2015 Dario Diaz. 
