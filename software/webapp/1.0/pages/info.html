@@ -1,45 +1,31 @@
-<template><div class="panel-heading">
-	<div class="panel-title text-center">Info</div>
-</div>
+<template>
 <div class="panel-body">
-	<div id="info-accelerometer">
-		<h5 class="text-center">Accelerometer</h5>
-		<label class="btn-block">x: <span class="label label-success">0</span></label>
-		<label class="btn-block">y: <span class="label label-success">0</span></label>
-		<label class="btn-block">z: <span class="label label-success">0</span></label>
-	</div>
-	<div id="info-gyroscope">
-		<h5 class="text-center">Gyroscope</h5>
-		<label class="btn-block">x: <span class="label label-success">0</span></label>
-		<label class="btn-block">y: <span class="label label-success">0</span></label>
-		<label class="btn-block">z: <span class="label label-success">0</span></label>
-	</div>
 	<div id="info-rotation">
-		<h5 class="text-center">Angle</h5>
+		<h5 class="text-center">Rotacion</h5>
 		<label class="btn-block">x: <span class="label label-success">0</span></label>
 		<label class="btn-block">y: <span class="label label-success">0</span></label>
 		<label class="btn-block">z: <span class="label label-success">0</span></label>
 	</div>
 
 	<div id="info-motors">
-		<h5 class="text-center">Motors speed</h5>
+		<h5 class="text-center">Motores</h5>
 
-		<span id="motor0">Left: <label>0</label>%</span>
+		<span id="motor0">Izquierdo: <label>0</label>%</span>
 		<div class="progress">
 			<div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar"></div>
 		</div>
 
-		<span id="motor2">Right: <label>0</label>%</span>
+		<span id="motor2">Derecho: <label>0</label>%</span>
 		<div class="progress">
 			<div class="progress-bar progress-bar-success" style="width: 0%;" role="progressbar"></div>
 		</div>
 
-		<span id="motor1">Front: <label>0</label>%</span>
+		<span id="motor1">Frontal: <label>0</label>%</span>
 		<div class="progress">
 			<div class="progress-bar progress-bar-warning" style="width: 0%;" role="progressbar"></div>
 		</div>
 
-		<span id="motor3">Rear: <label>0</label>%</span>
+		<span id="motor3">Trasero: <label>0</label>%</span>
 		<div class="progress">
 			<div class="progress-bar progress-bar-danger" style="width: 0%;" role="progressbar"></div>
 		</div>

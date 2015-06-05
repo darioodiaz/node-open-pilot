@@ -4,21 +4,7 @@ var motorSpeedClasses = ["progress-bar-info", "progress-bar-success", "progress-
 
 //Display accel data
 function displayIMU(data) {
-	displayAccelerometer(data.accelerometer);
-	displayGyroscope(data.gyro);
-	displayRotation(data.rotation);
-};
-function displayAccelerometer(data) {
-	var spans = $("#info-accelerometer").find("label span");
-	spans[0].innerHTML = data.x;
-	spans[1].innerHTML = data.y;
-	spans[2].innerHTML = data.z;
-};
-function displayGyroscope(data) {
-	var spans = $("#info-gyroscope").find("label span");
-	spans[0].innerHTML = data.x;
-	spans[1].innerHTML = data.y;
-	spans[2].innerHTML = data.z;
+	displayRotation(data);
 };
 function displayRotation(data) {
 	var spans = $("#info-rotation").find("label span");
@@ -49,21 +35,12 @@ function displayMotors(motorSpeed) {
 	var realSpeed = 0;
 	var selectedClass = "";
 	motorSpeed.forEach(function(speed, index) {
-		realSpeed = Math.round(speed * 100 / 255);
+		realSpeed = Number(speed * 100 / 255).toFixed(2);
 		$("#motor" + index).find("label").text(realSpeed);
+		$("#control" + index).val(realSpeed);
+
 		motorSpeedClasses.forEach(function(className) { $("#motor" + index + "+.progress .progress-bar").removeClass(className) } );
 		selectedClass = motorSpeedClasses[Math.floor(realSpeed / 25)];
 		$("#motor" + index + "+.progress .progress-bar").css("width", realSpeed + "%").addClass(selectedClass);
 	});
-};
-
-//Handler for the connect button
-function onBtnConnectClick() {  app.connect(); };
-
-function onBtnChangeClick(e) {
-	var data = $(e.currentTarget).parent().find("input").attr("id");
-	var val = $("#" + data).val();
-	var params = {};
-	params[data] = val;
-	sendEvent("/client_settings", params);
 };

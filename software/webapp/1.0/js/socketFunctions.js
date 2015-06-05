@@ -27,8 +27,7 @@ function onIMUCalibration(accel) {
 	droneRender.calibrate(accel);
 };
 function onIMUData(data) { 
-	//displayAccelerometer(accel); 
 	displayIMU(data);
-	droneRender.updateDroneRotation(data.rotation);
+	droneRender.updateDroneRotation(data);
 };
 function sendEvent(eventName, params) { app.socket.publish(eventName, (params ? params: {}) ); };

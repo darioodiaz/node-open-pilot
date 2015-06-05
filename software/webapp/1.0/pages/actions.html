@@ -1,20 +1,55 @@
-<template><div class="form-horizontal">
-	<div class="form-group">
-		<label class="label label-info control-label col-sm-3">Pitch:</label>
-		<div>
-			<input style="width: 50px;" type="text" id="pitch"><button class="btn btn-default btn-xs btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
+<template>
+	<div class="panel-body">
+		<h5 class="text-center">Modo de control</h5>
+		<form class="form-inline" id="controlForm">
+			<div class="radio">
+				<label>
+					Teclado <input id="mode_keyboard" name="controlMode" value="keyboard" type="radio">
+				</label>
+			</div>
+			<div class="radio">
+				<label>
+					Joystick <input id="mode_joystick" name="controlMode" checked value="joystick" type="radio">
+				</label>
+			</div>
+			<div class="radio">
+				<label>
+					Voz <input id="mode_voice" name="controlMode" value="voice" type="radio">
+				</label>
+			</div>
+		</form>
+
+		<h5 class="text-center">Velocidades</h5>
+		<div class="form-horizontal">
+			<div class="form-group">
+				<label class="col-md-3 control-label">Pitch: </label>
+				<input value="3" maxlength="3" class="form-control col-md-3" style="width: 50px;" type="text" id="pitch"><button class="btn btn-default btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label">Roll: </label>
+				<input value="3" maxlength="3" class="form-control col-md-3" style="width: 50px;" type="text" id="roll"><button class="btn btn-default btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label">Yaw: </label>
+				<input value="3" maxlength="3" class="form-control col-md-3" style="width: 50px;" type="text" id="yaw"><button class="btn btn-default btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
+			</div>
 		</div>
+
+		<h5 class="text-center">PID</h5>
+		<div class="form-horizontal">
+			<div class="form-group">
+				<label class="col-md-3 control-label">P: </label>
+				<input value="3" maxlength="3" class="form-control col-md-3" style="width: 50px;" type="text" id="pitch"><button class="btn btn-default btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label">I: </label>
+				<input value="5" maxlength="3" class="form-control col-md-3" style="width: 50px;" type="text" id="roll"><button class="btn btn-default btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label">D: </label>
+				<input value="2" maxlength="3" class="form-control col-md-3" style="width: 50px;" type="text" id="yaw"><button class="btn btn-default btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
+			</div>
+		</div>
+
 	</div>
-	<div class="form-group">
-		<label class="label label-info control-label col-sm-3">Roll:</label>
-		<div>
-			<input style="width: 50px;" type="text" id="roll"><button class="btn btn-default btn-xs btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
-		</div>
-	</div>
-	<div class="form-group">						
-		<label class="label label-info control-label col-sm-3">Yaw:</label>
-		<div>
-			<input style="width: 50px;" type="text" id="yaw"><button class="btn btn-default btn-xs btn-change"><i class="glyphicon glyphicon-repeat"></i></button>
-		</div>
-	</div>					
-</div></template>
+</template>

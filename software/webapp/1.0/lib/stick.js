@@ -97,6 +97,7 @@ var GamepadInstance = function(id) {
   };
   function pollStatus() {
     self.gamepad = navigator.getGamepads()[self.id];
+    if (!self.gamepad) { console.warn("Gamepad disconnected"); return; }
 
     //Button mapper fn
     for (var i = 0; i < self.gamepad.buttons.length; i++) {
@@ -149,8 +150,11 @@ var GamePadController = {
   ticking: false,
   gamepads: [],
   freq: 100,
+  interval: null,
+  intervalCount : 0,
 
   init: function(callback, freq) {
+    if (GamePadController.interval) { return; }
     GamePadController.freq = freq || GamePadController.freq;
 
     GamePadController.gamepads.push(new GamepadInstance(0));
@@ -163,8 +167,7 @@ var GamePadController = {
     GamePadController.GAMEPAD_2 = GamePadController.gamepads[2];
     GamePadController.GAMEPAD_3 = GamePadController.gamepads[3];
 
-    var interval;
-    interval = setInterval(function() {
+    GamePadController.interval = setInterval(function() {
       var found = false;
       var where;
       console.log("Searching gamepads...");
@@ -176,11 +179,21 @@ var GamePadController = {
         }
       }
       if (found) {
-        clearInterval(interval);
+        clearInterval(GamePadController.interval);
+        GamePadController.interval = null;
+        GamePadController.intervalCount = 0;
         GamePadController.gamepads[i].config(navigator.getGamepads()[where]);
         console.log("Gamepad found in : ", where, ". Instance: ", GamePadController.gamepads[i]);
         callback();
         GamePadController.scheduleSearchGamepads();
+      } else {
+        GamePadController.intervalCount++;
+      }
+      if (GamePadController.intervalCount == 5) {
+        console.warn("Gamepads not found");
+        clearInterval(GamePadController.interval);
+        GamePadController.intervalCount = 0;
+        GamePadController.interval = null;
       }
     }, 1000);
   },
