@@ -1,0 +1,25 @@
+Requerido:
+
+1 Arduino Pro Mini (3.3v)
+4 Resistencias 100k
+4 Resistencias 10k
+4 Diodos 4148
+1 Modulo Hc-05 o HC-06 Bluetooth
+1 kit de motores clon Syma (http://articulo.mercadolibre.com.ar/MLA-543977266-kit-4-motores-4-helices-syma-para-armar-quadcopter-arduino-_JM?redirectedFromSearch=true)
+
+Pines macho
+Socalos hembras
+Cable Plano
+Bateria de entre 250 a 400 mAh
+
+Opcional:
+
+1 MPU6050 (acelerometro, giroscopio)
+
+NOTA: cualquiera de estos componentes se puede conseguir en casas de electronica o internet. Una pagina recomendada es OpenHacks.com que tienen mucha diversiad de componentes o mercadolibre, cordobavende.
+
+La bateria recomendada es en las medidas indicadas, cualquier bateria menor dificultara el tiempo de vuelo y una mayor tendra mas peso para el drone.
+
+El arduino DEBE ser de 3.3v ya que su version de 5v no funciona con la bateria indicada.
+
+Los diodos pueden ser 4148 o los comunes, la diferencia radica en que los 4148 disminuyen mas rapido la corriente generada por el motor al apagarse.

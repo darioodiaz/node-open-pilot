@@ -1,9 +1,0 @@
-1 Arduino Pro Mini (3.3v)
-1 MPU6050
-1 100k Resistence
-1 10k Resistence
-1 Hc-05 Bluetooth / ESP8266 Wifi
-4 xxxx Diode
-4 Female xx connectors
-Male and female sockets
-Plain wire
