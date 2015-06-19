@@ -1,7 +1,8 @@
 var drone = {
-	pitchSpeed: 5, rollSpeed: 5, yawSpeed: 25, 
-	flySpeed: 8, calibrated: false,
-	motorSpeed: [], pidValues: [0,0,0,0]
+	pitchSpeed: 15, rollSpeed: 15, yawSpeed: 60, 
+	flySpeed: 18, calibrated: false,
+	pidPitchSetPoint: 0, pidRollSetPoint: 0,
+	motorSpeed: [0,0,0,0], pidValues: [0,0,0,0]
 }; 
 var settingsBackup, calibrationBackup, bayeuxCli, netClient, io;
 
@@ -48,26 +49,56 @@ function attachHardware() {
 function initDrone() {
 	drone.PID = [];
 	attachHardware();
-	drone.PID.push( new PID("PITCH", 0, 5, 2, 3) );
-	drone.PID.push( new PID("ROLL", 0, 3, 2, 3) );	
+	drone.PID.push( new PID("PITCH", drone.pidPitchSetPoint, 5, 2, 4) );
+	drone.PID.push( new PID("ROLL", drone.pidRollSetPoint, 5, 2, 4) );	
+	drone.PID.push( new PID("YAW", 0, 3, 2, 3) );	
 	IMU_Helper.startIMU(onIMUCallback);
 	//drone.API = new API();
 	//drone.API.createAPIServer(drone);
 };
 
 function onIMUCallback(data, cancelCallback) {
-	var pitchSpeed = drone.PID[0].compute(data);
-	var rollSpeed = drone.PID[1].compute(data);	
+	var pitchSpeed = drone.PID[0].compute(data, drone.pidPitchSetPoint);
+	var rollSpeed = drone.PID[1].compute(data, drone.pidRollSetPoint);	
 
-	drone.pidValues[0] = data.xReverse ? rollSpeed : 0;
-	drone.pidValues[2] = !data.xReverse ? rollSpeed : 0;
+	drone.pidValues[0] = !data.xReverse ? Math.abs(rollSpeed) : -Math.abs(rollSpeed);
+	drone.pidValues[2] = !data.xReverse ? -Math.abs(rollSpeed) : Math.abs(rollSpeed);
 
-	drone.pidValues[1] = !data.yReverse ? pitchSpeed : 0;
-	drone.pidValues[3] = data.yReverse ? pitchSpeed : 0;
+	drone.pidValues[1] = !data.yReverse ? -Math.abs(pitchSpeed) : Math.abs(pitchSpeed);
+	drone.pidValues[3] = !data.yReverse ? Math.abs(pitchSpeed) : -Math.abs(pitchSpeed);
 
-	console.log("PID: ", drone.pidValues);
+	adjustMotors();
+	if (drone.isWakeUp) {
+		applySpeeds();
+	}
 
 	bayeuxCli.publish("/j5_imu", data);
+};
+
+function adjustMotors() {	
+	drone.motorSpeed[0] += drone.pidValues[0];
+	drone.motorSpeed[1] += drone.pidValues[1];
+	drone.motorSpeed[2] += drone.pidValues[2];
+	drone.motorSpeed[3] += drone.pidValues[3];
+};
+function fixMotorLimits() {
+	drone.motorSpeed[0] = drone.motorSpeed[0] > 240 ? 240 : drone.motorSpeed[0];
+	drone.motorSpeed[1] = drone.motorSpeed[1] > 240 ? 240 : drone.motorSpeed[1];
+	drone.motorSpeed[2] = drone.motorSpeed[2] > 240 ? 240 : drone.motorSpeed[2];
+	drone.motorSpeed[3] = drone.motorSpeed[3] > 240 ? 240 : drone.motorSpeed[3];
+
+	drone.motorSpeed[0] = drone.motorSpeed[0] < 60 ? 60 : drone.motorSpeed[0];
+	drone.motorSpeed[1] = drone.motorSpeed[1] < 60 ? 60 : drone.motorSpeed[1];
+	drone.motorSpeed[2] = drone.motorSpeed[2] < 60 ? 60 : drone.motorSpeed[2];
+	drone.motorSpeed[3] = drone.motorSpeed[3] < 60 ? 60 : drone.motorSpeed[3];
+};
+function applySpeeds() {
+	fixMotorLimits();
+	drone.rollMotors[0].fwd(drone.motorSpeed[0]);
+	drone.pitchMotors[0].fwd(drone.motorSpeed[1]);
+	drone.rollMotors[1].fwd(drone.motorSpeed[2]);
+	drone.pitchMotors[1].fwd(drone.motorSpeed[3]);
+	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
 };
 
 function onWakeUp() {
@@ -76,94 +107,18 @@ function onWakeUp() {
 		motor.start(drone.yawSpeed);
 		drone.motorSpeed[motor.motorId] = drone.yawSpeed;
 	});
+	drone.isWakeUp = true;
 	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
 };
 
 function onFlyUp() {
-	drone.yawSpeed += drone.flySpeed;
-	drone.yawSpeed = drone.yawSpeed > 255 ? 255 : drone.yawSpeed; 
+	drone.isWakeUp = true;
+	for (var i=0; i < drone.motorSpeed.length; i++) {
+		drone.motorSpeed[i] += drone.flySpeed;
+	}	
+	//applySpeeds();
 
-	if (true) {
-		/*var leftVel = drone.yawSpeed + (drone.pidValues[0] ? drone.pidValues[0] - drone.yawSpeed : 0);
-		var upVel = drone.yawSpeed + (drone.pidValues[1] ? drone.pidValues[1] - drone.yawSpeed : 0);
-		var rightVel = drone.yawSpeed + (drone.pidValues[2] ? drone.pidValues[2] - drone.yawSpeed : 0);
-		var downVel = drone.yawSpeed + (drone.pidValues[3] ? drone.pidValues[3] - drone.yawSpeed : 0);*/
-
-		if (!drone.oldLeftVel) {
-			drone.oldLeftVel = drone.pidValues[0];
-			drone.oldUpVel = drone.pidValues[1];
-			drone.oldRightVel = drone.pidValues[2];
-			drone.oldDownVel = drone.pidValues[3];
-
-			drone.leftVel = drone.oldLeftVel;
-			drone.upVel = drone.oldUpVel;
-			drone.rightVel = drone.oldRightVel;
-			drone.downVel = drone.oldDownVel;
-		} else {
-			if (drone.pidValues[0] >= drone.oldLeftVel) {
-				drone.leftVel = drone.pidValues[0];
-			} else if(drone.pidValues[0]  ) {
-				drone.leftVel = (drone.oldLeftVel - drone.pidValues[0]);
-			} else {
-
-			}
-
-			if (drone.pidValues[2] > drone.oldUpVel) {
-				drone.upVel = drone.pidValues[1];
-			} else if(drone.pidValues  ) {
-				drone.upVel = (drone.oldUpVel - drone.pidValues[1]);
-			} else {
-
-			}
-
-			if (drone.pidValues[2] > drone.oldRightVel) {
-				drone.rightVel = drone.pidValues[2];
-			} else if(drone.pidValues[2]  ) {
-				drone.rightVel = (drone.oldRightVel - drone.pidValues[2]);
-			} else {
-
-			}
-
-			if (drone.pidValues[3] > drone.oldDownVel) {
-				drone.downVel = drone.pidValues[3];
-			} else if(drone.pidValues[3  ) {
-				drone.downVel = (drone.oldDownVel - drone.pidValues[3]);
-			} else {
-
-			}
-
-			drone.oldLeftVel = drone.leftVel;
-			drone.oldUpVel = drone.upVel;
-			drone.oldRightVel = drone.rightVel;
-			drone.oldDownVel = drone.downVel;
-		}	
-
-		/*var leftVel = drone.pidValues[0];
-		var upVel = drone.pidValues[1];
-		var rightVel = drone.pidValues[2];
-		var downVel = drone.pidValues[3];*/
-
-		drone.leftVel = drone.leftVel > 180 ? 180 : drone.leftVel;
-		drone.upVel = drone.upVel > 180 ? 180 : drone.upVel;
-		drone.rightVel = drone.rightVel > 180 ? 180 : drone.rightVel;
-		drone.downVel = drone.downVel > 180 ? 180 : drone.downVel;
-
-		drone.leftVel = drone.leftVel < 0 ? 0 : drone.leftVel;
-		drone.upVel = drone.upVel < 0 ? 0 : drone.upVel;
-		drone.rightVel = drone.rightVel < 0 ? 0 : drone.rightVel;
-		drone.downVel = drone.downVel < 0 ? 0 : drone.downVel;
-
-		drone.rollMotors[0].fwd(drone.leftVel);
-		drone.pitchMotors[0].fwd(drone.upVel);
-		drone.rollMotors[1].fwd(drone.rightVel);
-		drone.pitchMotors[1].fwd(drone.downVel);	
-
-		drone.motorSpeed[drone.rollMotors[0].motorId] = drone.leftVel;
-		drone.motorSpeed[drone.pitchMotors[0].motorId] = drone.upVel;
-		drone.motorSpeed[drone.rollMotors[1].motorId] = drone.rightVel;
-		drone.motorSpeed[drone.pitchMotors[1].motorId] = drone.downVel;
-	} else {
-		/*
+	/*
 		var leftVel = drone.yawSpeed - 2;
 		var upVel = drone.yawSpeed;
 		var rightVel = drone.yawSpeed - 60;
@@ -183,16 +138,13 @@ function onFlyUp() {
 		drone.motorSpeed[drone.pitchMotors[0].motorId] = upVel;
 		drone.motorSpeed[drone.rollMotors[1].motorId] = rightVel;
 		drone.motorSpeed[drone.pitchMotors[1].motorId] = downVel;
-
-		drone.yawMotors.forEach(function(motor) {
-			drone.motorSpeed[motor.motorId] = drone.yawSpeed;
-			motor.fwd(drone.yawSpeed);
-		});
-		*/
-	}
-	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
+	*/
 };
 function onFlyDown() {
+	drone.isWakeUp = false;
+	drone.pidRollSetPoint = 0;
+	drone.pidPitchSetPoint = 0;
+	
 	drone.yawSpeed -= drone.flySpeed * 6;
 	drone.yawMotors.forEach(function(motor) {
 		if (drone.yawSpeed <= 0) {
@@ -205,82 +157,44 @@ function onFlyDown() {
 };
 
 function onRotateRight() {
-	var leftMotor = drone.rollMotors[0];
-	var rightMotor = drone.rollMotors[1];
-	var Lspeed = leftMotor.currentSpeed + drone.pitchSpeed;
-	var Rspeed = rightMotor.currentSpeed - drone.pitchSpeed;
-
-	Lspeed = (Lspeed >= 255 ? 255 : Lspeed);
-	Rspeed = (Rspeed >= 255 ? 255 : Rspeed);
-
-	Lspeed = (Lspeed <= 0 ? 0 : Lspeed);
-	Rspeed = (Rspeed <= 0 ? 0 : Rspeed);
-
-	drone.motorSpeed[leftMotor.motorId] = Lspeed;
-	drone.motorSpeed[rightMotor.motorId] = Rspeed;
-
-	leftMotor.fwd(Lspeed);
-	rightMotor.fwd(Rspeed);
-
-	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
+	/*
+		var leftMotor = drone.rollMotors[0];
+		var rightMotor = drone.rollMotors[1];
+		var Lspeed = leftMotor.currentSpeed + drone.pitchSpeed;
+		var Rspeed = rightMotor.currentSpeed - drone.pitchSpeed;
+		Lspeed = (Lspeed >= 255 ? 255 : Lspeed);
+		Rspeed = (Rspeed >= 255 ? 255 : Rspeed);
+		Lspeed = (Lspeed <= 0 ? 0 : Lspeed);
+		Rspeed = (Rspeed <= 0 ? 0 : Rspeed);
+		drone.motorSpeed[leftMotor.motorId] = Lspeed;
+		drone.motorSpeed[rightMotor.motorId] = Rspeed;
+		leftMotor.fwd(Lspeed);
+		rightMotor.fwd(Rspeed);
+	*/
+	drone.pidRollSetPoint -= 2;
+	if (drone.pidRollSetPoint < -30) {
+		drone.pidRollSetPoint = -30;
+	}
+	//applySpeeds();
 };
 function onRotateLeft() {
-	var leftMotor = drone.rollMotors[0];
-	var rightMotor = drone.rollMotors[1];
-	var Lspeed = leftMotor.currentSpeed - drone.pitchSpeed;
-	var Rspeed = rightMotor.currentSpeed + drone.pitchSpeed;
-
-	Lspeed = (Lspeed >= 255 ? 255 : Lspeed);
-	Rspeed = (Rspeed >= 255 ? 255 : Rspeed);
-
-	Lspeed = (Lspeed <= 0 ? 0 : Lspeed);
-	Rspeed = (Rspeed <= 0 ? 0 : Rspeed);
-
-	drone.motorSpeed[leftMotor.motorId] = Lspeed;
-	drone.motorSpeed[rightMotor.motorId] = Rspeed;
-
-	leftMotor.fwd(Lspeed);
-	rightMotor.fwd(Rspeed);
-	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
+	drone.pidRollSetPoint += 2;
+	if (drone.pidRollSetPoint > 30) {
+		drone.pidRollSetPoint = 30;
+	}
 };
 
-function onBackward() {
-	var frontMotor = drone.pitchMotors[0];
-	var rearMotor = drone.pitchMotors[1];
-	var Fspeed = frontMotor.currentSpeed + drone.rollSpeed;
-	var Bspeed = rearMotor.currentSpeed - drone.rollSpeed;
-
-	Fspeed = (Fspeed >= 255 ? 255 : Fspeed);
-	Bspeed = (Bspeed >= 255 ? 255 : Bspeed);
-
-	Fspeed = (Fspeed <= 0 ? 0 : Fspeed);
-	Bspeed = (Bspeed <= 0 ? 0 : Bspeed);
-
-	drone.motorSpeed[frontMotor.motorId] = Fspeed;
-	drone.motorSpeed[rearMotor.motorId] = Bspeed;
-
-	frontMotor.fwd(Fspeed);
-	rearMotor.fwd(Bspeed);
-	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
-};
 function onForward() {
-	var frontMotor = drone.pitchMotors[0];
-	var rearMotor = drone.pitchMotors[1];
-	var Fspeed = frontMotor.currentSpeed - drone.rollSpeed;
-	var Bspeed = rearMotor.currentSpeed + drone.rollSpeed;
-
-	Fspeed = (Fspeed >= 255 ? 255 : Fspeed);
-	Bspeed = (Bspeed >= 255 ? 255 : Bspeed);
-
-	Fspeed = (Fspeed <= 0 ? 0 : Fspeed);
-	Bspeed = (Bspeed <= 0 ? 0 : Bspeed);
-
-	drone.motorSpeed[frontMotor.motorId] = Fspeed;
-	drone.motorSpeed[rearMotor.motorId] = Bspeed;
-
-	frontMotor.fwd(Fspeed);
-	rearMotor.fwd(Bspeed);
-	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
+	drone.pidPitchSetPoint += 2;
+	if (drone.pidPitchSetPoint > 30) {
+		drone.pidPitchSetPoint = 30;
+	}	
+};
+function onBackward() {
+	drone.pidPitchSetPoint -= 2;
+	if (drone.pidPitchSetPoint < -30) {
+		drone.pidPitchSetPoint = -30;
+	}
 };
 
 function onSelfLeft() {
@@ -332,6 +246,7 @@ function onSelfRight() {
 
 function getSettings() { return settingsBackup; };
 function getRotation() { return drone.rotation; };
+function idle() { drone.pidPitchSetPoint = 0; drone.pidRollSetPoint = 0; };
 
 function setSettings(data) {
 	drone.pitchSpeed = data.pitch || drone.pitchSpeed; drone.rollSpeed = data.roll || drone.rollSpeed; drone.yawSpeed = data.yaw || drone.yawSpeed;
@@ -339,17 +254,6 @@ function setSettings(data) {
 
 function emergencyLand() {
 	console.warn("Something goes wrong! Doing emergency land");
-	//var eqSpeed = 7, temp;
-	//setTimeout(emergencyLading, 500);
-	function emergencyLading() {
-		drone.yawMotors.forEach(function(motor) {
-			temp = motor.speed - eqSpeed < 25 ? 25 : motor.speed - eqSpeed;			
-			motor.fwd(temp);
-			drone.motorSpeed[motor.motorId] = temp;
-		});
-		bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
-		setTimeout(emergencyLading, 500);
-	};
 };
 
 function create(BT_PORT) {
@@ -375,20 +279,12 @@ function createWifi(options) {
 	}
 };
 
-function onlyMotor(data) {
-	var _motor = drone.yawMotors[data.motorId];
-	_motor.fwd(Number(data.speed) );
-	drone.motorSpeed[data.motorId] = data.speed;
-	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
-};
-
 var me = {
 	create: create,
 	createWifi: createWifi,
 	getSettings: getSettings,
 	setSettings: setSettings,
 	getRotation: getRotation,
-	onlyMotor: onlyMotor,
 
 	emergencyLand: emergencyLand,
 
@@ -400,6 +296,7 @@ var me = {
 	selfRight: onSelfRight,
 	selfLeft: onSelfLeft,
 	backward: onBackward,
-	forward: onForward
+	forward: onForward,
+	idle: idle
 };	
 exports.Drone = me;

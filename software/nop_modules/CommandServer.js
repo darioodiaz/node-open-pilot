@@ -23,6 +23,7 @@ function subscribeClient() {
 	client = new faye.Client(IP_SERVER);
 	//UI events
 	client.subscribe("/wakeUp", drone.wakeUp);
+	client.subscribe("/idle", drone.idle);
 	client.subscribe("/flyUp", drone.flyUp);
 	client.subscribe("/flyDown", drone.flyDown);
 	client.subscribe("/rotateLeft", drone.rotateLeft);
@@ -33,8 +34,6 @@ function subscribeClient() {
 	client.subscribe("/backward", drone.backward);
 	client.subscribe("/settings", onSettings);
 	client.subscribe("/uiConnect", onUIConnectionSuccessful);
-
-	client.subscribe("/onlyMotor", drone.onlyMotor);
 };
 
 function onSettings(data) { drone.setSettings(data); };
