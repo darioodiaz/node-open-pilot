@@ -1,3 +1,11 @@
+/**
+ * Copyright 2015, Dario Diaz.
+ * All rights reserved.
+ *
+ * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
 var me = meConstructor;
 function meConstructor(type, setPoint, kp, ki, kd) {
 	this.compute = compute;

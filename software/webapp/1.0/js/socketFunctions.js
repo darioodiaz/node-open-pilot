@@ -1,3 +1,11 @@
+/**
+ * Copyright 2015, Dario Diaz.
+ * All rights reserved.
+ *
+ * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
 //Try to connect with J5 server, then attachListeners to buttons and start communication
 function app_connect() {
 	var self = this;	

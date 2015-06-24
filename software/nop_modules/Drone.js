@@ -1,3 +1,11 @@
+/**
+ * Copyright 2015, Dario Diaz.
+ * All rights reserved.
+ *
+ * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
 var drone = {
 	pitchSpeed: 15, rollSpeed: 15, yawSpeed: 60, 
 	flySpeed: 18, calibrated: false,

@@ -1,3 +1,11 @@
+/**
+ * Copyright 2015, Dario Diaz.
+ * All rights reserved.
+ *
+ * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
 var panelClasses = ["panel-info", "panel-danger", "panel-warning"];
 var connectionStatusClasses = ["text-success", "text-danger", "text-warning"];
 var motorSpeedClasses = ["progress-bar-info", "progress-bar-success", "progress-bar-warning", "progress-bar-danger"];

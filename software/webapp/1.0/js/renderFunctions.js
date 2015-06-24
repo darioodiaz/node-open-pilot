@@ -1,3 +1,11 @@
+/**
+ * Copyright 2015, Dario Diaz.
+ * All rights reserved.
+ *
+ * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
 var droneRenderSettings = {
 	calibrateX: 0, calibrateY: 0, calibrateZ: 0,
 	lastX: 0, lastY: 0, lastZ: 0,
