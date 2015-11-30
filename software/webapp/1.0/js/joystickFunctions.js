@@ -1,46 +1,29 @@
 //Bind the joystick events to control the drone
+var motorId = 0;
 function app_initJoystick() {
 	stickJS.init(attachJoystickEvents);
-
-	function attachJoystickEvents() {
-		stickJS.GAMEPAD_0.on("start", onStartPress);
-		stickJS.GAMEPAD_0.on("left", onLeftPress);
-		stickJS.GAMEPAD_0.on("up", onUpPress);
-		stickJS.GAMEPAD_0.on("right", onRightPress);
-		stickJS.GAMEPAD_0.on("down", onDownPress);
-		stickJS.GAMEPAD_0.on("button2", flyUp);
-		stickJS.GAMEPAD_0.on("button3", flyDown);
+	function attachJoystickEvents() {		
+		stickJS.GAMEPAD_0.on("idle", onIDLE);
+		stickJS.GAMEPAD_0.on("left", onLeft);
+		stickJS.GAMEPAD_0.on("right", onRight);
+		stickJS.GAMEPAD_0.on("up", onUp);
+		stickJS.GAMEPAD_0.on("down", onDown);
+		stickJS.GAMEPAD_0.on("button2", onFlyUp);
+		stickJS.GAMEPAD_0.on("button3", onFlyDown);
+		stickJS.GAMEPAD_0.on("start", onWakeUp);
 	};
 	
 };
-
-function onStartPress() {
-	//drone wake up
+function onWakeUp() {
+	console.log("WAKE UP !");
 	sendEvent("/wakeUp");
-};
-function onLeftPress() {
-	console.log("Left");
-	sendEvent("/rotateLeft");
-};
-function onUpPress() {
-	console.log("Up");
-	sendEvent("/forward");
-};
-function onRightPress() {
-	console.log("Right");
-	sendEvent("/rotateRight");
-};
-function onDownPress() {
-	console.log("Down");
-	sendEvent("/backward");
-};
-function flyUp() {
-	//go up
-	console.log("Fly up");
-	sendEvent("/flyUp");
-};
-function flyDown() {
-	//go down
-	console.log("Fly down");
-	sendEvent("/flyDown");
-};
+}
+
+function onFlyUp() { sendEvent("/flyUp"); };
+function onFlyDown() { sendEvent("/flyDown"); };
+function onIDLE() { sendEvent("/idle"); };
+
+function onLeft() { sendEvent("/rotateLeft"); };
+function onRight() { sendEvent("/rotateRight"); };
+function onUp() { sendEvent("/forward"); };
+function onDown() { sendEvent("/backward"); };

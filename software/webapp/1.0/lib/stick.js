@@ -1,22 +1,17 @@
 /*! stickJS v1.0 | (C) 2015 Dario Diaz | github.com/darioodiaz/stickjs for more info */
 
-var GamepadInstance = function(id) {
+var GamepadInstance = GamepadInstanceConstructor;
+function GamepadInstanceConstructor(id) {
   var self  = this;
   this.id = id;
+  this.status = "IDLE";
+  this.idleCalled = false;
+  this.wasButtonsPressed = false;
   this.ticking = false;
   this.oldAxesStatus = [];
 
-  this.config = function(gamepad) {
-    this.vendor = gamepad.vendor;
-    for (var i = 0; i < gamepad.axes.length; i++) {
-      this.oldAxesStatus.push(gamepad.axes[i]);
-    }
-    console.log("Gamepad axes loaded");
-    startPolling(); 
-  };
-  this.connected = function() {
-    return self.oldAxesStatus.length > 0;
-  };
+  this.config = GamePadInstanceConfig;
+  this.connected = GamepadInstanceConnected;
   /* Gamepads pre-configuration
   */
   this.buttonMapper = {
@@ -37,35 +32,10 @@ var GamepadInstance = function(id) {
     "_10": "lStickButton",
     "_11": "rStickButton"
   };
-
   this.buttonFn = {};  
   /* GamepadInstance functions */
-  this.on = function(name, fn) {
-    //console.log("stickJS: handler for " + name);
-    /*
-    Name for directions:
-    up, down, left, right
-
-    Name for buttons:
-    button1, button2, button3, button4
-
-    Name for backButtons:
-    l1, l2 
-    r1, r2
-
-    Name for axis:
-    LStickX LStickY
-    RStickX RStickY
-
-    Name for special buttons:
-    start, select, mode
-    */
-    this.buttonFn[name.toLowerCase()] = fn;
-  };
-  this.stopPolling = function() {
-    console.log("Gamepad stopped");
-    self.ticking = false;
-  };
+  this.on = GamepadInstanceOnEvent;
+  this.stopPolling = GamepadInstanceStopPolling;
 
   /* GamepadInstance internal functions */
   function startPolling() {
@@ -75,76 +45,109 @@ var GamepadInstance = function(id) {
       tick();
     }
   };
-  function tick() {
-    pollStatus();
-    setTimeout(intervalNextTick, GamePadController.freq);
-    //scheduleNextTick();
-  };
-  function intervalNextTick() {
-    if (self.ticking) {
-      tick();
-    }
-  };
-
-  function scheduleNextTick() {
-    if (self.ticking) {
-      if (window.requestAnimationFrame) {
-        window.requestAnimationFrame(tick);
-      } else if (window.webkitRequestAnimationFrame) {
-        window.webkitRequestAnimationFrame(tick);
-      }
-    }
-  };
+  function tick() { pollStatus(); setTimeout(intervalNextTick, GamePadController.freq); /*scheduleNextTick();*/ };
+  function intervalNextTick() { if (self.ticking) { tick(); } };
   function pollStatus() {
     self.gamepad = navigator.getGamepads()[self.id];
-    if (!self.gamepad) { console.warn("Gamepad disconnected"); return; }
+    if (!self.gamepad) { console.warn("Gamepad disconnected"); self.gamepad.status = "IDLE"; return; }
 
+    var buttonIdleCount = 0;
     //Button mapper fn
     for (var i = 0; i < self.gamepad.buttons.length; i++) {
       if(self.gamepad.buttons[i].pressed) {
+          self.gamepad.status = "WORKING";
         //TODO: revisar esto!
-
-        if (i == 0) { continue; }
-
+        if (i == 0) { buttonIdleCount++; continue; }
+        //TODO: aplicar eventos on, up, release
         if (self.buttonFn[ self.buttonMapper["_" + i].toLowerCase() ]) {
           self.buttonFn[ self.buttonMapper["_" + i].toLowerCase() ](self.gamepad.buttons[i].value, self.gamepad);
         }
+      } else {
+        buttonIdleCount++;
       }
     }
+
+    if (buttonIdleCount >= self.gamepad.buttons.length) {
+      //TODO: ver que hacer cuando no hay botones de acciones apretados
+    }
+
+    var axesIdleCount = 0;
 
     //Customize for each Gamepad
     for (var i = 0; i < self.gamepad.axes.length; i++) {
       if(self.gamepad.axes[i] != self.oldAxesStatus[i]) {
+        self.wasButtonsPressed = true;
+        self.idleCalled = false;
         if (i == 1) {
           if (self.gamepad.axes[1] == -1) {
             //up
             if(self.buttonFn["up"]) {
-              self.buttonFn["up"](self.gamepad, self.gamepad.axes[i]);
+              self.buttonFn["up"](self.gamepad.axes[i], self.gamepad);
             }
             //down
           } else if (self.gamepad.axes[1] == 1) {
             if(self.buttonFn["down"]) {
-              self.buttonFn["down"](self.gamepad, self.gamepad.axes[i]);
+              self.buttonFn["down"](self.gamepad.axes[i], self.gamepad);
             }
           }
         } else if(i == 0) {
           if (self.gamepad.axes[0] == -1) {
             //left
             if (self.buttonFn["left"]) {
-              self.buttonFn["left"](self.gamepad, self.gamepad.axes[i]);
+              self.buttonFn["left"](self.gamepad.axes[i], self.gamepad);
             }
             //right
           } else if(self.gamepad.axes[0] == 1) {
             if(self.buttonFn["right"]) {
-              self.buttonFn["right"](self.gamepad, self.gamepad.axes[i]);
+              self.buttonFn["right"](self.gamepad.axes[i], self.gamepad);
             }
           }
         }
+      } else {
+        axesIdleCount++;
       }
     }
+    if (axesIdleCount >= self.gamepad.axes.length) {
+      if ( self.buttonFn["idle"] && self.wasButtonsPressed && !self.idleCalled) {
+        console.log("Gamepad IDLE");
+        self.idleCalled = true;
+        self.buttonFn["idle"]();
+      }
+    }
+  };
+  function GamepadInstanceConnected() { return this.oldAxesStatus.length > 0; };
+  function GamepadInstanceStopPolling() { console.log("Gamepad stopped"); this.ticking = false; };
+  function GamepadInstanceOnEvent(name, fn) {
+    /*
+      Name for directions:
+      up, down, left, right
 
+      Name for buttons:
+      button1, button2, button3, button4
+
+      Name for backButtons:
+      l1, l2 
+      r1, r2
+
+      Name for axis:
+      LStickX LStickY
+      RStickX RStickY
+
+      Name for special buttons:
+      start, select, mode
+    */
+    this.buttonFn[name.toLowerCase()] = fn;
+  };
+  function GamePadInstanceConfig(gamepad) {
+    this.vendor = gamepad.vendor;
+    for (var i = 0; i < gamepad.axes.length; i++) {
+      this.oldAxesStatus.push(gamepad.axes[i]);
+    }
+    console.log("Gamepad axes loaded");
+    startPolling(); 
   };
 };
+
 
 var GamePadController = {
   ticking: false,
@@ -232,6 +235,6 @@ var GamePadController = {
       window.webkitRequestAnimationFrame(GamePadController.watchNewGamepads);
     }
   }
-
 };
+
 window.stickJS = GamePadController;

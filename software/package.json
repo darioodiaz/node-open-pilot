@@ -13,6 +13,7 @@
   "dependencies": {
     "express": "^4.12.3",
     "faye": "^1.1.1",
+    "johnny-five": "^0.9.12",
     "serialport": "^1.7.1"
   },
   "keywords": [

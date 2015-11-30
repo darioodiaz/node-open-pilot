@@ -1,4 +1,4 @@
-var express = require("express");
+var express = require("express"),
 	drone = require("./nop_modules/Drone").Drone;
 
 var server;
@@ -7,10 +7,13 @@ function parseArgs() {
 	/*
 		node nop-server.js COM_PORT -p 3000
 	*/
+	var isWifi = false;
 	if (process.argv.length < 3) {
-		console.log("Must specify a Bluetooth port.");
-		showHelp();
-		return;	
+		isWifi = true;
+		console.log("Using wifi");
+		//console.log("Must specify a Bluetooth port.");
+		//showHelp();
+		//return;	
 	}
 	var expressPort = 3000;
 	var BT_PORT = String(process.argv[2]).trim();
@@ -36,8 +39,11 @@ function parseArgs() {
 		return;
 	}
 	if (expressPort == -1) { return; }
-	attachInterrupt();
-	drone.create(BT_PORT);
+	if (isWifi) {
+		drone.createWifi();
+	} else {
+		drone.create(BT_PORT);
+	}
 	server = express();
 	server.use("/ui", express.static("webapp/1.0/"));
 	server.get("/ui", onUISuccess);
@@ -55,18 +61,6 @@ function showHelp() {
 	console.log("\tnode nop-server.js BLUETOOTH_PORT [-p WEBSERVER_PORT]\n");
 	console.log("Optional parameters:");
 	console.log("\t-p: custom port for webserver. Defaults 3000");
-};
-
-function attachInterrupt() {
-	if (process.platform === "win32") {
-		var rl = require("readline").createInterface({
-			input: process.stdin,
-			output: process.stdout
-		});
-		rl.on("SIGINT", function () {
-			drone.emergencyLand();
-		});
-	}
 };
 
 parseArgs();

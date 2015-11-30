@@ -73,7 +73,7 @@ function calibrate(data) {
 };
 function updateDroneRotation(data) {
 	if (Math.round(droneRender.settings.rotationX - data.x)) {
-		floor.rotation.z = data.x * Math.PI / 180 * -1;
+		floor.rotation.z = data.x * Math.PI / 180;
 	}
 	if (Math.round(droneRender.settings.rotationY - data.y)) {
 		floor.rotation.x = data.y * Math.PI / 180;
