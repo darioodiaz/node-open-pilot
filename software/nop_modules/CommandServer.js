@@ -1,3 +1,11 @@
+/**
+ * Copyright 2015, Dario Diaz.
+ * All rights reserved.
+ *
+ * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
 var faye = require('faye'),
 	http = require('http');
 
@@ -34,8 +42,11 @@ function subscribeClient() {
 	client.subscribe("/backward", drone.backward);
 	client.subscribe("/settings", onSettings);
 	client.subscribe("/uiConnect", onUIConnectionSuccessful);
+<<<<<<< HEAD
 
 	client.subscribe("/customMotor", drone.customMotor);
+=======
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 };
 
 function onSettings(data) { drone.setSettings(data); };
