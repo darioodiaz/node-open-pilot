@@ -1,4 +1,3 @@
-var me = meConstructor;
 function meConstructor(type, setPoint, kp, ki, kd) {
 	this.compute = compute;
 	this.type = type;
@@ -10,7 +9,7 @@ function meConstructor(type, setPoint, kp, ki, kd) {
 
 	this.errorArea = 0;
 	this.lastError = 0;
-	this.meesaged = false;
+	this.messaged = false;
 };
 
 function compute(angleData, setPoint) {
@@ -28,9 +27,9 @@ function compute(angleData, setPoint) {
 		break;
 	}
 	if (!input || isNaN(input)) {
-		if (!this.meesaged) {
+		if (!this.messaged) {
 			console.log("Cannot compute, input is NULL");
-			this.meesaged = true;
+			this.messaged = true;
 		}
 		return 0;
 	}
@@ -53,5 +52,4 @@ function compute(angleData, setPoint) {
 	return Math.round(val);
 };
 
-
-exports.PID = me;
+exports.PID = meConstructor;

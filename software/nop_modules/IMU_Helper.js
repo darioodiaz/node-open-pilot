@@ -2,7 +2,7 @@ var IMU, calibrated;
 var xOffset, yOffset, zOffset;
 var grx, gry, grz;
 
-function getIMU(j5) { IMU = new j5.IMU({ freq: 80}); return IMU; };
+function getIMU(j5) { IMU = new j5.IMU({ freq: 500}); return IMU; };
 
 function getGyroAngles(gyro) {
 	var gx = gyro.x, gy = gyro.y, gz = gyro.z;
@@ -101,10 +101,10 @@ function getAngles(gyro, accel) {
 		};
 };
 
-function cancelCallback() { IMU.removeAllListeners("data"); };
+function cancelCallback() { IMU.removeAllListeners("change"); };
 
 function startIMU(callback) {
-	IMU.on("data", onIMUSuccess);
+	IMU.on("change", onIMUSuccess);
 	function onIMUSuccess() {
 		if ( !(this.accelerometer.x || this.gyro.x) || (isNaN(this.accelerometer.x) || isNaN(this.gyro.x) ) ) {
 			console.log("IMU getting null, skipping angles...");
@@ -115,8 +115,8 @@ function startIMU(callback) {
 };
 
 var me = {
-	getGyroAngles: getGyroAngles,
-	getAccelerometerAngles: getAccelerometerAngles,
+	//getGyroAngles: getGyroAngles,
+	//getAccelerometerAngles: getAccelerometerAngles,
 	getAngles: getAngles,
 	startIMU: startIMU,
 	getIMU: getIMU

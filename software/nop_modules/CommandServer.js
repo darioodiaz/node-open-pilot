@@ -15,7 +15,7 @@ function startFayeServer(droneInstance) {
 	bayeux.on("disconnect", onClientDisconnect);
 	return bayeux.getClient();
 	function onClientDisconnect() {
-		drone.emergencyLand();
+		//drone.emergencyLand();
 	};
 };
 

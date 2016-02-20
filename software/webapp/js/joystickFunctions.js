@@ -3,7 +3,7 @@ var motorId = 0;
 function app_initJoystick() {
 	stickJS.init(attachJoystickEvents);
 	function attachJoystickEvents() {		
-		stickJS.GAMEPAD_0.on("idle", onIDLE);
+		//stickJS.GAMEPAD_0.on("idle", onIDLE);
 		stickJS.GAMEPAD_0.on("left", onLeft);
 		stickJS.GAMEPAD_0.on("right", onRight);
 		stickJS.GAMEPAD_0.on("up", onUp);
