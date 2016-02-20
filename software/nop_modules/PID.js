@@ -1,4 +1,3 @@
-var me = meConstructor;
 function meConstructor(type, setPoint, kp, ki, kd) {
 	this.compute = compute;
 	this.type = type;
@@ -10,9 +9,11 @@ function meConstructor(type, setPoint, kp, ki, kd) {
 
 	this.errorArea = 0;
 	this.lastError = 0;
+	this.messaged = false;
 };
 
-function compute(angleData) {
+function compute(angleData, setPoint) {
+	this.setPoint = setPoint;
 	var input;
 	switch(this.type.toUpperCase()) {
 		case "ROLL":
@@ -25,6 +26,13 @@ function compute(angleData) {
 			input = angleData.z;
 		break;
 	}
+	if (!input || isNaN(input)) {
+		if (!this.messaged) {
+			console.log("Cannot compute, input is NULL");
+			this.messaged = true;
+		}
+		return 0;
+	}
 	var error = this.setPoint - input;
 	this.errorArea += error;
 	var derivativeError = (error - this.lastError);
@@ -33,14 +41,15 @@ function compute(angleData) {
 	var I = this.ki * this.errorArea;
 	var D = this.kd * derivativeError;
 
+	I = 0; //TODO: Fix integral problem
+
 	var val = P + I + D;
 	this.lastError = error;
 
-	val = val > 255 ? 255 : val;
-	//val = val < 0 ? 0 : val;
+	val = val > 30 ? 30 : val;
+	val = val < -30 ? -30 : val;
 
 	return Math.round(val);
 };
 
-
-exports.PID = me;
+exports.PID = meConstructor;

@@ -2,7 +2,7 @@ var IMU, calibrated;
 var xOffset, yOffset, zOffset;
 var grx, gry, grz;
 
-function getIMU(j5) { IMU = new j5.IMU({ freq: 80}); return IMU; };
+function getIMU(j5) { IMU = new j5.IMU({ freq: 500}); return IMU; };
 
 function getGyroAngles(gyro) {
 	var gx = gyro.x, gy = gyro.y, gz = gyro.z;
@@ -29,6 +29,7 @@ function getAngles(gyro, accel) {
 	var gyroAngles = getGyroAngles(gyro);
 	var xReverse = false;
 	var yReverse = false;
+	var zReverse = false;
 
 	if (!calibrated) {
 	    grx = accelAngles.x;
@@ -43,12 +44,15 @@ function getAngles(gyro, accel) {
 	var ry = (0.96 * accelAngles.y) + (0.04 * gry);
 	var rz = (0.96 * accelAngles.z) + (0.04 * grz);
 
+	var x,y,z;
+
 	if (!calibrated) {
 		calibrated = true;
 		xOffset = rx;
 		yOffset = ry;
 		zOffset = rz;
 	} else {
+	/*
 		if ( Math.floor(rx - xOffset) > 0) {
 			rx *= -1;
 			xReverse = true;
@@ -60,35 +64,59 @@ function getAngles(gyro, accel) {
 		if ( Math.floor(rz - zOffset) > 0) {
 			rz *= -1;
 		}
+	*/
+		if (rx < 0) {
+			x = rx + xOffset;
+			xReverse = true;
+		} else {
+			x = rx - xOffset;
+		}
+		if (ry < 0) {
+			y = ry + yOffset;			
+			yReverse = true;
+		} else {
+			y = ry - yOffset;
+		}
+		if (rz < 0) {
+			z = rz + zOffset;
+			zReverse = true;
+		} else {
+			z = rz + zOffset;
+		}
 	}
 
 	return { 
-			x: Math.round(rx - xOffset).toFixed(2),
+			x: Math.round(x).toFixed(2),
 			xReverse: xReverse,
 
-			y: Math.round(ry - yOffset).toFixed(2), 
+			y: Math.round(y).toFixed(2), 
 			yReverse: yReverse,
 
-			z: Math.round(rz - zOffset).toFixed(2)
+			z: Math.round(z).toFixed(2),
+			zReverse: zReverse
+
+			//x: Math.round(rx - xOffset).toFixed(2),
+			//y: Math.round(ry - yOffset).toFixed(2), 
+			//z: Math.round(rz - zOffset).toFixed(2)
 		};
 };
 
-function cancelCallback() { IMU.removeAllListeners("data"); };
+function cancelCallback() { IMU.removeAllListeners("change"); };
 
 function startIMU(callback) {
-	IMU.on("data", onIMUSuccess);
+	IMU.on("change", onIMUSuccess);
 	function onIMUSuccess() {
-		if (!this.accelerometer.x) {
+		if ( !(this.accelerometer.x || this.gyro.x) || (isNaN(this.accelerometer.x) || isNaN(this.gyro.x) ) ) {
 			console.log("IMU getting null, skipping angles...");
-			return;
+		} else {
+			callback(getAngles(this.gyro, this.accelerometer), cancelCallback);
 		}
-		callback(getAngles(this.gyro, this.accelerometer), cancelCallback);
 	};
 };
 
 var me = {
-	getGyroAngles: getGyroAngles,
-	getAccelerometerAngles: getAccelerometerAngles,
+	//getGyroAngles: getGyroAngles,
+	//getAccelerometerAngles: getAccelerometerAngles,
 	getAngles: getAngles,
 	startIMU: startIMU,
 	getIMU: getIMU

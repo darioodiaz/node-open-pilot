@@ -30,4 +30,6 @@ function onIMUData(data) {
 	displayIMU(data);
 	droneRender.updateDroneRotation(data);
 };
-function sendEvent(eventName, params) { app.socket.publish(eventName, (params ? params: {}) ); };
+function sendEvent(eventName, params) { 
+	app.socket.publish(eventName, params ? params: {} ); 
+};

@@ -7,6 +7,7 @@ An open-source software and open-hardware desing for make your own drone/quadcop
 
 * 14/05/2015 - First test of hardware and software together SUCCESSFULL ! (some balancing problems while flying but its works !)
 * 05/06/2015 - Upload hardware files and construccion guide, PID implementation
+* 01/12/2015 - First test with esp8266 wifi module, works ! :)
 
 ### Historial de cambios:
 
@@ -17,6 +18,7 @@ NOTA: Las guias de hardware estan un poco demoradas, como la funcionalidad final
 
 # Copyright and license
 
-Code and documentation Copyright 2015 Dario Diaz. 
-Electronic schematics, desing and 3D quadcopter model Copyright 2015 Dario Ochoa.
+Code and documentation Copyright 2016 Dario Diaz. 
+Electronic schematics Copyright 2016 Dario Ochoa.
+Desing and 3D quadcopter model 2016 Jonathan Pedernera.
 This project is under [Creative Commons 4.0 Internacional License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
