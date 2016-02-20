@@ -1,11 +1,3 @@
-/**
- * Copyright 2015, Dario Diaz.
- * All rights reserved.
- *
- * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
- *
- */
-
 var api = require('socket.io')
 var PORT = 5000;
 var SOCKETS = [];

@@ -1,11 +1,3 @@
-/**
- * Copyright 2015, Dario Diaz.
- * All rights reserved.
- *
- * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
- *
- */
-
 var IMU, calibrated;
 var xOffset, yOffset, zOffset;
 var grx, gry, grz;
@@ -116,12 +108,8 @@ function startIMU(callback) {
 	function onIMUSuccess() {
 		if ( !(this.accelerometer.x || this.gyro.x) || (isNaN(this.accelerometer.x) || isNaN(this.gyro.x) ) ) {
 			console.log("IMU getting null, skipping angles...");
-<<<<<<< HEAD
 		} else {
 			callback(getAngles(this.gyro, this.accelerometer), cancelCallback);
-=======
-			return undefined;
->>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 		}
 	};
 };

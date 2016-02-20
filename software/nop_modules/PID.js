@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-=======
-/**
- * Copyright 2015, Dario Diaz.
- * All rights reserved.
- *
- * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
- *
- */
-
-var me = meConstructor;
->>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 function meConstructor(type, setPoint, kp, ki, kd) {
 	this.compute = compute;
 	this.type = type;
@@ -26,10 +14,6 @@ function meConstructor(type, setPoint, kp, ki, kd) {
 
 function compute(angleData, setPoint) {
 	this.setPoint = setPoint;
-<<<<<<< HEAD
-=======
-	console.log("SP: ", this.setPoint);
->>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 	var input;
 	switch(this.type.toUpperCase()) {
 		case "ROLL":
@@ -43,14 +27,10 @@ function compute(angleData, setPoint) {
 		break;
 	}
 	if (!input || isNaN(input)) {
-<<<<<<< HEAD
 		if (!this.messaged) {
 			console.log("Cannot compute, input is NULL");
 			this.messaged = true;
 		}
-=======
-		console.log("Cannot compute, input is NULL");
->>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 		return 0;
 	}
 	var error = this.setPoint - input;
