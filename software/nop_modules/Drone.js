@@ -1,5 +1,18 @@
+/**
+ * Copyright 2015, Dario Diaz.
+ * All rights reserved.
+ *
+ * This source code is licensed under CC 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
 var drone = {
+<<<<<<< HEAD
 	throttle: 2, calibrated: false,
+=======
+	pitchSpeed: 15, rollSpeed: 15, yawSpeed: 60, 
+	flySpeed: 18, calibrated: false,
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 	pidPitchSetPoint: 0, pidRollSetPoint: 0,
 	motorSpeed: [0,0,0,0], pidValues: [0,0,0,0]
 }; 
@@ -48,17 +61,46 @@ function attachHardware() {
 	drone.rollMotors[1].motorId = 2;
 	drone.pitchMotors[1].motorId = 3;
 
+<<<<<<< HEAD
 	drone.yawMotors = [drone.rollMotors[0], drone.pitchMotors[0], drone.rollMotors[1], drone.pitchMotors[1]];
+=======
+	drone.yawMotors = drone.rollMotors.concat(drone.pitchMotors);
+};
+
+function initDrone() {
+	drone.PID = [];
+	attachHardware();
+	drone.PID.push( new PID("PITCH", drone.pidPitchSetPoint, 5, 2, 4) );
+	drone.PID.push( new PID("ROLL", drone.pidRollSetPoint, 5, 2, 4) );	
+	drone.PID.push( new PID("YAW", 0, 3, 2, 3) );	
+	IMU_Helper.startIMU(onIMUCallback);
+	//drone.API = new API();
+	//drone.API.createAPIServer(drone);
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 };
 function onIMUCallback(data, cancelCallback) {
 	var pitchSpeed = drone.PID[0].compute(data, drone.pidPitchSetPoint);
 	var rollSpeed = drone.PID[1].compute(data, drone.pidRollSetPoint);	
+<<<<<<< HEAD
 
 	drone.pidValues[0] = !data.xReverse ? Math.abs(rollSpeed) : -Math.abs(rollSpeed);
 	drone.pidValues[2] = !data.xReverse ? -Math.abs(rollSpeed) : Math.abs(rollSpeed);
 
 	drone.pidValues[1] = !data.yReverse ? -Math.abs(pitchSpeed) : Math.abs(pitchSpeed);
 	drone.pidValues[3] = !data.yReverse ? Math.abs(pitchSpeed) : -Math.abs(pitchSpeed);
+=======
+
+	drone.pidValues[0] = !data.xReverse ? Math.abs(rollSpeed) : -Math.abs(rollSpeed);
+	drone.pidValues[2] = !data.xReverse ? -Math.abs(rollSpeed) : Math.abs(rollSpeed);
+
+	drone.pidValues[1] = !data.yReverse ? -Math.abs(pitchSpeed) : Math.abs(pitchSpeed);
+	drone.pidValues[3] = !data.yReverse ? Math.abs(pitchSpeed) : -Math.abs(pitchSpeed);
+
+	adjustMotors();
+	if (drone.isWakeUp) {
+		applySpeeds();
+	}
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 
 	if (drone.isWakeUp) {
 		applySpeeds();
@@ -92,6 +134,32 @@ function fixMotorLimits() {
 	drone.motorSpeed[3] = drone.motorSpeed[3] < 0 ? 0 : parseInt(drone.motorSpeed[3]);
 };
 
+function adjustMotors() {	
+	drone.motorSpeed[0] += drone.pidValues[0];
+	drone.motorSpeed[1] += drone.pidValues[1];
+	drone.motorSpeed[2] += drone.pidValues[2];
+	drone.motorSpeed[3] += drone.pidValues[3];
+};
+function fixMotorLimits() {
+	drone.motorSpeed[0] = drone.motorSpeed[0] > 240 ? 240 : drone.motorSpeed[0];
+	drone.motorSpeed[1] = drone.motorSpeed[1] > 240 ? 240 : drone.motorSpeed[1];
+	drone.motorSpeed[2] = drone.motorSpeed[2] > 240 ? 240 : drone.motorSpeed[2];
+	drone.motorSpeed[3] = drone.motorSpeed[3] > 240 ? 240 : drone.motorSpeed[3];
+
+	drone.motorSpeed[0] = drone.motorSpeed[0] < 60 ? 60 : drone.motorSpeed[0];
+	drone.motorSpeed[1] = drone.motorSpeed[1] < 60 ? 60 : drone.motorSpeed[1];
+	drone.motorSpeed[2] = drone.motorSpeed[2] < 60 ? 60 : drone.motorSpeed[2];
+	drone.motorSpeed[3] = drone.motorSpeed[3] < 60 ? 60 : drone.motorSpeed[3];
+};
+function applySpeeds() {
+	fixMotorLimits();
+	drone.rollMotors[0].fwd(drone.motorSpeed[0]);
+	drone.pitchMotors[0].fwd(drone.motorSpeed[1]);
+	drone.rollMotors[1].fwd(drone.motorSpeed[2]);
+	drone.pitchMotors[1].fwd(drone.motorSpeed[3]);
+	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
+};
+
 function onWakeUp() {
 	drone.motorSpeed = [178, 178, 183, 178];
 	drone.yawMotors.forEach(function(motor) {
@@ -101,6 +169,7 @@ function onWakeUp() {
 	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
 };
 function onFlyUp() {
+<<<<<<< HEAD
 	var leftVel = drone.motorSpeed[0] + 3;
 	var upVel = drone.motorSpeed[1] + 3;
 	var rightVel = drone.motorSpeed[2] + 3;
@@ -122,12 +191,45 @@ function onFlyUp() {
 	drone.motorSpeed[3] = downVel;
 
 	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
+=======
+	drone.isWakeUp = true;
+	for (var i=0; i < drone.motorSpeed.length; i++) {
+		drone.motorSpeed[i] += drone.flySpeed;
+	}	
+	//applySpeeds();
+
+	/*
+		var leftVel = drone.yawSpeed - 2;
+		var upVel = drone.yawSpeed;
+		var rightVel = drone.yawSpeed - 60;
+		var downVel = drone.yawSpeed - 20;
+
+		leftVel = leftVel < 0 ? 0 : leftVel;
+		upVel = upVel < 0 ? 0 : upVel;
+		rightVel = rightVel < 0 ? 0 : rightVel;
+		downVel = downVel < 0 ? 0 : downVel;
+
+		drone.rollMotors[0].fwd(leftVel);
+		drone.pitchMotors[0].fwd(upVel);
+		drone.rollMotors[1].fwd(rightVel);
+		drone.pitchMotors[1].fwd(downVel);	
+
+		drone.motorSpeed[drone.rollMotors[0].motorId] = leftVel;
+		drone.motorSpeed[drone.pitchMotors[0].motorId] = upVel;
+		drone.motorSpeed[drone.rollMotors[1].motorId] = rightVel;
+		drone.motorSpeed[drone.pitchMotors[1].motorId] = downVel;
+	*/
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 };
 function onFlyDown() {
 	drone.isWakeUp = false;
 	drone.pidRollSetPoint = 0;
 	drone.pidPitchSetPoint = 0;
 	
+<<<<<<< HEAD
+=======
+	drone.yawSpeed -= drone.flySpeed * 6;
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 	drone.yawMotors.forEach(function(motor) {
 		drone.motorSpeed[motor.motorId] *= -3;
 		if (drone.motorSpeed[motor.motorId] < 0) {
@@ -138,6 +240,7 @@ function onFlyDown() {
 	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
 };
 function onRotateRight() {
+<<<<<<< HEAD
 	if (drone.motorSpeed[ drone.rollMotors[1].motorId ] > 100) {
 		drone.motorSpeed[ drone.rollMotors[0].motorId ] -= 10;
 		drone.rollMotors[0].speed( drone.motorSpeed[ drone.rollMotors[0].motorId ] );
@@ -195,6 +298,46 @@ function onBackward() {
 	if (drone.pidPitchSetPoint < -30) {
 		drone.pidPitchSetPoint = -30;
 	}*/
+=======
+	/*
+		var leftMotor = drone.rollMotors[0];
+		var rightMotor = drone.rollMotors[1];
+		var Lspeed = leftMotor.currentSpeed + drone.pitchSpeed;
+		var Rspeed = rightMotor.currentSpeed - drone.pitchSpeed;
+		Lspeed = (Lspeed >= 255 ? 255 : Lspeed);
+		Rspeed = (Rspeed >= 255 ? 255 : Rspeed);
+		Lspeed = (Lspeed <= 0 ? 0 : Lspeed);
+		Rspeed = (Rspeed <= 0 ? 0 : Rspeed);
+		drone.motorSpeed[leftMotor.motorId] = Lspeed;
+		drone.motorSpeed[rightMotor.motorId] = Rspeed;
+		leftMotor.fwd(Lspeed);
+		rightMotor.fwd(Rspeed);
+	*/
+	drone.pidRollSetPoint -= 2;
+	if (drone.pidRollSetPoint < -30) {
+		drone.pidRollSetPoint = -30;
+	}
+	//applySpeeds();
+};
+function onRotateLeft() {
+	drone.pidRollSetPoint += 2;
+	if (drone.pidRollSetPoint > 30) {
+		drone.pidRollSetPoint = 30;
+	}
+};
+
+function onForward() {
+	drone.pidPitchSetPoint += 2;
+	if (drone.pidPitchSetPoint > 30) {
+		drone.pidPitchSetPoint = 30;
+	}	
+};
+function onBackward() {
+	drone.pidPitchSetPoint -= 2;
+	if (drone.pidPitchSetPoint < -30) {
+		drone.pidPitchSetPoint = -30;
+	}
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 };
 
 function onSelfLeft() {
@@ -207,6 +350,10 @@ function onSelfRight() {
 function getSettings() { return settingsBackup; };
 function getRotation() { return drone.rotation; };
 function idle() { drone.pidPitchSetPoint = 0; drone.pidRollSetPoint = 0; };
+<<<<<<< HEAD
+=======
+
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 function setSettings(data) {
 	drone.pitchSpeed = data.pitch || drone.pitchSpeed; drone.rollSpeed = data.roll || drone.rollSpeed; drone.yawSpeed = data.yaw || drone.yawSpeed;
 };
@@ -236,6 +383,7 @@ function createWifi(options) {
 	};
 };
 
+<<<<<<< HEAD
 function customMotor(obj) {
 	if (obj.all) {
 		drone.yawMotors.forEach(function(motor) {
@@ -255,6 +403,8 @@ function customMotor(obj) {
 	bayeuxCli.publish("/j5_motorSpeed", drone.motorSpeed);
 };
 
+=======
+>>>>>>> e9f2e7c059b86d5dd7bd840401bf5e53e08f132d
 var me = {
 	customMotor: customMotor,
 
