@@ -16,6 +16,13 @@ An open-source software and open-hardware desing for make your own drone/quadcop
 
 NOTA: Las guias de hardware estan un poco demoradas, como la funcionalidad final de software. Estar atentos a las actualizaciones para cualquier nuevo cambio subido.
 
+# Videos:
+
+[How to make drones with Javascript Conference - Demo video](https://www.youtube.com/watch?v=PTchXL5T090)
+[Flight test 1](https://www.youtube.com/watch?v=DoXzZh1q8Hc)
+[Flight test 2](https://www.youtube.com/watch?v=bivjg05sj5Y)
+[Controlled flight test](https://www.youtube.com/watch?v=Cx6uZZTDjpI)
+
 # Copyright and license
 
 Code and documentation Copyright 2016 Dario Diaz. 
