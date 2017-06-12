@@ -5,12 +5,14 @@ An open-source software and open-hardware desing for make your own drone/quadcop
 
 ### CHANGELOG:
 
+* 11/06/2017 - Thanks to @santifonzalida for works with scripts minification using gulp
 * 14/05/2015 - First test of hardware and software together SUCCESSFULL ! (some balancing problems while flying but its works !)
 * 05/06/2015 - Upload hardware files and construccion guide, PID implementation
 * 01/12/2015 - First test with esp8266 wifi module, works ! :)
 
 ### Historial de cambios:
 
+* 11/06/2017 - Gracias a @santifonzalida por su trabajo con la minificacion de scripts usando gulp
 * 14/05/2015 - Primera prueba de hardware y software juntos EXITOSA ! (algunos problemas de balanceo mientras volaba pero todo funciono !)
 * 05/06/2015 - Subida de archivos y guias de construccion de hardware, implementacion de PID en el software
 
