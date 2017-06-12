@@ -25,7 +25,7 @@ NOTA: Las guias de hardware estan un poco demoradas, como la funcionalidad final
 
 # Copyright and license
 
-* Code and documentation Copyright 2016 Dario Diaz. 
+* Project, code and documentation Copyright 2016 Dario Diaz. 
 * Electronic schematics Copyright 2016 Dario Ochoa.
 * Desing and 3D quadcopter model 2016 Jonathan Pedernera.
 
