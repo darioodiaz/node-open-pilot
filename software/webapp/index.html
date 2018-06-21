@@ -7,6 +7,22 @@
 	<link id="import_header" rel="import" href="pages/header.html">
 	<link id="import_info" rel="import" href="pages/info.html">
 	<link id="import_actions" rel="import" href="pages/actions.html">
+	<script type="text/javascript">
+		function mostrar(){
+		document.getElementById('oculto').style.display = 'block';}
+	</script>
+	<style type="text/css">
+		.boton{
+			text-decoration: none;
+			padding: 10px;
+			font-weight: 600;
+			font-size: 15px;
+			color: #ffffff;
+			background-color: #4CAF50;
+			border-radius: 6px;
+			border: 2px solid #b9d2d3;
+			 }
+	  </style>
 </head>
 <body>
 
@@ -35,10 +51,19 @@
 			<div class="panel-heading">
 				<div class="panel-title text-center">Live!</div>
 			</div>
-			<div class="panel-body">
+			<div  class="panel-body">
 				<div id="droneRender" style="height: 500px; border: 1px solid black;"></div>
 			</div>
 		</div>
+	</div>
+	<div class="container col-lg-12 " style=" text-align: right">
+		<div class="container">
+			<input class=" boton" type="button" value="Ver Joystick" onclick="mostrar()" >
+		</div>
+		<div id="oculto" class="container col-lg-12 text-center" style="display:none">
+			<img src="imgJoystick.png" >
+		</div>
+		
 	</div>
 
 	<script>
@@ -49,6 +74,7 @@
 	    	var clone = document.importNode(template.content, true);
 	    	document.querySelector('#div_'+ item).appendChild(clone);
 		});
+		
     </script>
 
 	<script src="lib/jquery.js"></script>
