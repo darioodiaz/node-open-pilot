@@ -26,45 +26,45 @@
 </head>
 <body>
 
-	<div id="div_header" class="containter-fluid col-md-12"></div>
+<div style="padding-top: 10px;" id="div_header" class="containter-fluid col-md-12"></div>
 
-	<div class="container col-md-3">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				<div class="panel-title text-center">Acciones</div>
-			</div>
-			<div id="div_actions" class="panel-body"></div>
-		</div>
-	</div>
+<div class="container col-md-3">
+    <div style="border-radius: 30px" class="panel panel-info">
+        <div style="border-top-left-radius: 30px; border-top-right-radius: 30px" class="panel-heading">
+            <div class="panel-title text-center"><h4><b>Acciones</b></h4></div>
+        </div>
+        <div id="div_actions" class="panel-body"></div>
+    </div>
+</div>
 
-	<div class="container col-md-2">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				<div class="panel-title text-center">Info</div>
-			</div>
-			<div id="div_info"></div>
-		</div>
-	</div>
+<div class="container col-md-2">
+    <div style="border-radius: 30px" class="panel panel-info">
+        <div style="border-top-left-radius: 30px; border-top-right-radius: 30px" class="panel-heading">
+            <div class="panel-title text-center"><h4><b>Info</b></h4></div>
+        </div>
+        <div id="div_info"></div>
+    </div>
+</div>
 
-	<div class="container col-md-7">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<div class="panel-title text-center">Live!</div>
-			</div>
-			<div  class="panel-body">
-				<div id="droneRender" style="height: 500px; border: 1px solid black;"></div>
-			</div>
-		</div>
-	</div>
-	<div class="container col-lg-12 " style=" text-align: right">
-		<div class="container">
-			<input class=" boton" type="button" value="Ver Joystick" onclick="mostrar()" >
-		</div>
-		<div id="oculto" class="container col-lg-12 text-center" style="display:none">
-			<img src="imgJoystick.png" >
-		</div>
-		
-	</div>
+<div class="container col-md-7">
+    <div style="border-radius: 30px" class="panel panel-primary">
+        <div style="border-top-left-radius: 30px; border-top-right-radius: 30px" class="panel-heading">
+            <div class="panel-title text-center"><h4><b>Live!</b></h4></div>
+        </div>
+        <div class="panel-body">
+            <div id="droneRender" style="height: 500px; border: 1px solid black;"></div>
+        </div>
+    </div>
+</div>
+<div class="container col-lg-12 " style=" text-align: right">
+    <div class="container">
+        <input class=" boton" type="button" value="Ver Joystick" onclick="mostrar()" >
+    </div>
+    <div id="oculto" class="container col-lg-12 text-center" style="display:none">
+        <img src="imgJoystick.png" >
+    </div>
+
+</div>
 
 	<script>
 		var importsArray = ["header", "info", "actions"];
@@ -74,15 +74,15 @@
 	    	var clone = document.importNode(template.content, true);
 	    	document.querySelector('#div_'+ item).appendChild(clone);
 		});
-		
+
     </script>
 
-	<script src="lib/jquery.js"></script>
-	<script src="lib/stick.js"></script>
-	<script src="lib/three.min.js"></script>
+<script src="lib/jquery.js"></script>
+<script src="lib/stick.js"></script>
+<script src="lib/three.min.js"></script>
 
-	<script src="dist/build.min.js"></script>
-	<script src="http://localhost:8000/client.js"></script>
+<script src="dist/build.min.js"></script>
+<script src="http://localhost:8000/client.js"></script>
 
 </body>
 </html>
